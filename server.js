@@ -23,8 +23,20 @@ function generateUploadId (req, res) {
   res.end(uuid());
 }
 
+function error (req, res) {
+  return function (err) {
+    // TODO cleanup temp files?
+    req.end();
+    res.writeHead(500, {"Content-Type": "text/plain"});
+    res.end("ERROR: " + err);
+  };
+}
+
 function upload (req, res, id) {
   var file = new pending.Writable("files/" + id);
+
+  file.on("error", error(req, res));
+  req.on("error", error(req, res));
 
   req.pipe(file);
 
@@ -40,8 +52,13 @@ function download (req, res, id) {
     if (err.code === "ENOENT") {
       // Not found → 404
       notFound(req, res);
+    } else {
+      // Other errors
+      error(req, res)(err);
     }
   });
+
+  req.on("error", error(req, res));
 
   file.pipe(res);
 }

@@ -1,6 +1,6 @@
 {
   "name": "file-share-server",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Sample server for BlendWebMix '14: share files in real time",
   "main": "server.js",
   "scripts": {
