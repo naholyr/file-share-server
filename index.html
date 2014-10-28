@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf8">
+  <title>Share files</title>
+</head>
+
+<body>
+
+<form id="upload">
+  <input type="file" name="file">
+  <input type="submit" value="Upload" name="submit">
+</form>
+<span id="download-url">Your download URL here</span>
+
+<script>
+/*eslint-env browser*/
+
+var form = document.getElementById("upload");
+var file = form.elements.file;
+var btn = form.elements.submit;
+var url = document.getElementById("download-url");
+var btnOriginalValue = btn.value;
+
+function upload (f) {
+  "use strict";
+
+  var xhr = new XMLHttpRequest();
+
+  url.innerText = location.protocol + "//" + location.host + "/download/" + f.name;
+
+  xhr.open("POST", "/upload", true);
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      btn.value = btnOriginalValue;
+      url.innerText = "Downloaded.";
+      btn.disabled = false;
+    } else {
+      url.innerText = "Failed uploading";
+    }
+  };
+
+  xhr.upload.onprogress = function (e) {
+    var progress = Math.round(100 * e.loaded / e.total);
+    btn.value = "Uploading (" + progress + "%)…";
+  };
+
+  xhr.send(f);
+}
+
+form.addEventListener("submit", function (e) {
+  "use strict";
+
+  e.preventDefault();
+
+  btn.value = "Uploading…";
+  btn.disabled = true;
+
+  upload(file.files[0], null);
+});
+</script>
+
+</body>
+
+</html>
