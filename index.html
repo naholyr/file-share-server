@@ -23,31 +23,47 @@ var btn = form.elements.submit;
 var url = document.getElementById("download-url");
 var btnOriginalValue = btn.value;
 
-function upload (f) {
+function upload (f, id) {
   "use strict";
 
   var xhr = new XMLHttpRequest();
 
-  url.innerText = location.protocol + "//" + location.host + "/download/" + f.name;
+  url.innerText = id
+    ? location.protocol + "//" + location.host + "/download/" + id + "/" + f.name
+    : "Generating upload ID…";
 
-  xhr.open("POST", "/upload", true);
+  if (!id) {
+    xhr.open("GET", "/upload-id", true);
+    xhr.onload = function () {
+      if (xhr.status === 201) {
+        upload(f, xhr.responseText);
+      } else {
+        url.innerText = "Failed generating upload ID";
+      }
+    };
+    xhr.send(null);
+  }
 
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      btn.value = btnOriginalValue;
-      url.innerText = "Downloaded.";
-      btn.disabled = false;
-    } else {
-      url.innerText = "Failed uploading";
-    }
-  };
+  else {
+    xhr.open("POST", "/upload/" + id, true);
 
-  xhr.upload.onprogress = function (e) {
-    var progress = Math.round(100 * e.loaded / e.total);
-    btn.value = "Uploading (" + progress + "%)…";
-  };
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        btn.value = btnOriginalValue;
+        btn.disabled = false;
+        url.innerText = "Downloaded.";
+      } else {
+        url.innerText = "Failed uploading";
+      }
+    };
 
-  xhr.send(f);
+    xhr.upload.onprogress = function (e) {
+      var progress = Math.round(100 * e.loaded / e.total);
+      btn.value = "Uploading (" + progress + "%)…";
+    };
+
+    xhr.send(f);
+  }
 }
 
 form.addEventListener("submit", function (e) {

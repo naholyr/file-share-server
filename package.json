@@ -1,6 +1,6 @@
 {
   "name": "file-share-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Sample server for BlendWebMix '14: share files in real time",
   "main": "server.js",
   "scripts": {
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/naholyr/file-share-server/issues"
   },
-  "homepage": "https://github.com/naholyr/file-share-server"
+  "homepage": "https://github.com/naholyr/file-share-server",
+  "dependencies": {
+    "uuid": "^2.0.1"
+  }
 }
