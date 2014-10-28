@@ -9,7 +9,10 @@ Real time file sharing server for BlendWebMix '14
 
 ## Tags
 
-Not yet
+* `01-naive-single` very naive implementation: one upload at a time, one download each
+* `02-naive-multiple` allows multiple uploads (using uuid)
+* `03-pending-streams` allows multiple downloads even after end of upload
+* `04-error-handling` basic error handling, remember to listen for "error" event all the time!
 
 ## Instructions
 
