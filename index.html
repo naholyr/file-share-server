@@ -51,7 +51,6 @@ function upload (f, id) {
       if (xhr.status === 200) {
         btn.value = btnOriginalValue;
         btn.disabled = false;
-        url.innerText = "Downloaded.";
       } else {
         url.innerText = "Failed uploading";
       }

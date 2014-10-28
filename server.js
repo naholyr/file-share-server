@@ -5,8 +5,7 @@
 var http = require("http");
 var fs = require("fs");
 var uuid = require("uuid");
-
-var streams = {};
+var pending = require("pending-streams");
 
 function notFound (req, res) {
   res.writeHead(404, {"Content-Type": "text/plain"});
@@ -25,20 +24,26 @@ function generateUploadId (req, res) {
 }
 
 function upload (req, res, id) {
-  streams[id] = req;
+  var file = new pending.Writable("files/" + id);
+
+  req.pipe(file);
 
   req.on("end", function () {
-    delete streams[id];
     res.end();
   });
 }
 
 function download (req, res, id) {
-  if (!streams[id]) {
-    return notFound(req, res);
-  }
+  var file = new pending.Readable("files/" + id);
 
-  streams[id].pipe(res);
+  file.on("error", function (err) {
+    if (err.code === "ENOENT") {
+      // Not found → 404
+      notFound(req, res);
+    }
+  });
+
+  file.pipe(res);
 }
 
 var server = http.createServer(function (req, res) {
